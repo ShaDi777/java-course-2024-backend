@@ -3,7 +3,6 @@ package edu.java.client.stackoverflow;
 import edu.java.client.dto.StackOverflowResponse;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 public class StackOverflowWebClient implements StackOverflowClient {
     private static final String BASE_URL = "https://api.stackexchange.com/2.3/";
