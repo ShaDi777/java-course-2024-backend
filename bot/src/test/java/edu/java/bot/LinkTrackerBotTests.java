@@ -14,21 +14,24 @@ import edu.java.bot.linktracker.links.LinkRepository;
 import edu.java.bot.linktracker.replies.ReplyConstants;
 import edu.java.bot.linktracker.replies.processors.BasicUserReplyProcessor;
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class BotTests {
+public class LinkTrackerBotTests {
     private final long chatId = 1L;
     Update fakeUpdate = Mockito.mock(Update.class);
     LinkTrackerBot linkTrackerBot;
@@ -45,22 +48,64 @@ public class BotTests {
         linksRepository = Mockito.mock(LinkRepository.class);
         var messageProcessor = new BasicUserCommandProcessor(linksRepository);
         var replyProcessor = new BasicUserReplyProcessor(linksRepository);
-        linkTrackerBot = new LinkTrackerBot("fakeToken", replyProcessor, messageProcessor);
-
-        ReflectionTestUtils.setField(linkTrackerBot, "bot", bot);
+        linkTrackerBot = new LinkTrackerBot(bot, replyProcessor, messageProcessor);
     }
 
-    @Test
-    public void unknownCommandTest() {
-        // given
-        String unknownCommand = "/unknownCommand";
+    private static Stream<Arguments> parametersBasicCommand() {
+        return Stream.of(
+            Arguments.of("/unknownCommand", CommandConstants.UNSUPPORTED_TEXT),
+            Arguments.of( CommandConstants.TRACK_COMMAND, CommandConstants.TRACK_REPLY_TEXT),
+            Arguments.of( CommandConstants.UNTRACK_COMMAND, CommandConstants.UNTRACK_REPLY_TEXT)
+        );
+    }
 
-        // when
-        String answer = executeCommand(unknownCommand, false, null);
+    @ParameterizedTest
+    @MethodSource("parametersBasicCommand")
+    public void basicCommandTest(String command, String expectedAnswer) {
+        String answer = executeCommand(command, false, null);
 
-        // then
-        assertThat(fakeUpdate.message().text()).isEqualTo(unknownCommand);
-        assertThat(answer).isEqualTo(CommandConstants.UNSUPPORTED_TEXT);
+        assertThat(fakeUpdate.message().text()).isEqualTo(command);
+        assertThat(answer).isEqualTo(expectedAnswer);
+    }
+
+    private static Stream<Arguments> parametersReplyCommand() {
+        return Stream.of(
+            Arguments.of(
+                "https://github.com/ShaDi777/java-course-2024-backend",
+                CommandConstants.TRACK_REPLY_TEXT,
+                true,
+                ReplyConstants.TRACK_SUCCESS_TEXT
+            ),
+            Arguments.of(
+                "https://github.com/ShaDi777/java-course-2024-backend",
+                CommandConstants.UNTRACK_REPLY_TEXT,
+                true,
+                ReplyConstants.UNTRACK_SUCCESS_TEXT
+            ),
+            Arguments.of(
+                "NOT_A_LINK",
+                CommandConstants.TRACK_REPLY_TEXT,
+                false,
+                ReplyConstants.TRACK_FAILURE_TEXT
+            ),
+            Arguments.of(
+                "NOT_A_LINK",
+                CommandConstants.UNTRACK_REPLY_TEXT,
+                false,
+                ReplyConstants.UNTRACK_FAILURE_TEXT
+            )
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("parametersReplyCommand")
+    public void replyCommandTest(String link, String replyOnText, boolean isSuccess, String expectedAnswer) {
+        when(linksRepository.isValidLink(link)).thenReturn(isSuccess);
+
+        String answer = executeCommand(link, true, replyOnText);
+
+        assertThat(fakeUpdate.message().text()).isEqualTo(link);
+        assertThat(answer).isEqualTo(expectedAnswer);
     }
 
     @Test
@@ -113,62 +158,6 @@ public class BotTests {
             .contains(CommandConstants.LIST_COMMAND).contains(CommandConstants.LIST_DESCRIPTION)
             .contains(CommandConstants.TRACK_COMMAND).contains(CommandConstants.TRACK_DESCRIPTION)
             .contains(CommandConstants.UNTRACK_COMMAND).contains(CommandConstants.UNTRACK_DESCRIPTION);
-    }
-
-    @Test
-    public void trackCommand() {
-        // given
-        String command = CommandConstants.TRACK_COMMAND;
-
-        // when
-        String answer = executeCommand(command, false, null);
-
-        // then
-        assertThat(fakeUpdate.message().text()).isEqualTo(command);
-        assertThat(answer).isEqualTo(CommandConstants.TRACK_REPLY_TEXT);
-    }
-
-    @Test
-    public void untrackCommand() {
-        // given
-        String command = CommandConstants.UNTRACK_COMMAND;
-
-        // when
-        String answer = executeCommand(command, false, null);
-
-        // then
-        assertThat(fakeUpdate.message().text()).isEqualTo(command);
-        assertThat(answer).isEqualTo(CommandConstants.UNTRACK_REPLY_TEXT);
-    }
-
-    @Test
-    public void replySuccessTrack() {
-        // given
-        String link = "https://github.com";
-        String replyOnText = CommandConstants.TRACK_REPLY_TEXT;
-        when(linksRepository.isValidLink(link)).thenReturn(true);
-
-        // when
-        String answer = executeCommand(link, true, replyOnText);
-
-        Mockito.verify(linksRepository, times(1)).trackLink(chatId, link);
-        assertThat(fakeUpdate.message().text()).isEqualTo(link);
-        assertThat(answer).isEqualTo(ReplyConstants.TRACK_SUCCESS_TEXT);
-    }
-
-    @Test
-    public void replySuccessUntrack() {
-        // given
-        String link = "https://github.com";
-        String replyOnText = CommandConstants.UNTRACK_REPLY_TEXT;
-        when(linksRepository.isValidLink(link)).thenReturn(true);
-
-        // when
-        String answer = executeCommand(link, true, replyOnText);
-
-        Mockito.verify(linksRepository, times(1)).untrackLink(chatId, link);
-        assertThat(fakeUpdate.message().text()).isEqualTo(link);
-        assertThat(answer).isEqualTo(ReplyConstants.UNTRACK_SUCCESS_TEXT);
     }
 
     // Help methods

@@ -1,5 +1,8 @@
 package edu.java.bot.linktracker.commands;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public final class CommandConstants {
     public static final String LANGUAGE_CODE = "RU";
 
@@ -22,7 +25,4 @@ public final class CommandConstants {
     public static final String LIST_FILLED_REPLY_TEXT = "Список отслеживаемых ресурсов:";
 
     public static final String UNSUPPORTED_TEXT = "Неподдерживаемая команда";
-
-    private CommandConstants() {
-    }
 }

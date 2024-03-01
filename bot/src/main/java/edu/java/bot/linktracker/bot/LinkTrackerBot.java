@@ -10,28 +10,17 @@ import com.pengrad.telegrambot.response.BaseResponse;
 import edu.java.bot.linktracker.commands.Command;
 import edu.java.bot.linktracker.commands.processors.UserCommandProcessor;
 import edu.java.bot.linktracker.replies.processors.UserReplyProcessor;
+import jakarta.annotation.PostConstruct;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class LinkTrackerBot implements Bot {
     private final TelegramBot bot;
     private final UserReplyProcessor userReplyProcessor;
     private final UserCommandProcessor userCommandProcessor;
-
-    @Autowired
-    public LinkTrackerBot(
-        @Value("${app.telegram-token}") String botToken,
-        @Qualifier("BasicUserReplyProcessor") UserReplyProcessor userReplyProcessor,
-        @Qualifier("BasicUserCommandProcessor") UserCommandProcessor userCommandProcessor
-    ) {
-        this.bot = new TelegramBot(botToken);
-        this.userReplyProcessor = userReplyProcessor;
-        this.userCommandProcessor = userCommandProcessor;
-    }
 
     @Override
     public <T extends BaseRequest<T, R>, R extends BaseResponse> void execute(BaseRequest<T, R> request) {
@@ -50,6 +39,7 @@ public class LinkTrackerBot implements Bot {
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
 
+    @PostConstruct
     @Override
     public void start() {
         setupMenu();
