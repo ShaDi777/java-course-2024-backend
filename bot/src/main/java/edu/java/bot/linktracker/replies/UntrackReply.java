@@ -5,7 +5,9 @@ import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.linktracker.commands.CommandConstants;
 import edu.java.bot.linktracker.links.LinkRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Component;
 
+@Component
 @AllArgsConstructor
 public class UntrackReply implements Reply {
     private final LinkRepository linkRepository;

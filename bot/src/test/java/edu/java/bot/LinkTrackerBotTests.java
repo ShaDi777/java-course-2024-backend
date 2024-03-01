@@ -9,10 +9,18 @@ import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.SendResponse;
 import edu.java.bot.linktracker.bot.LinkTrackerBot;
 import edu.java.bot.linktracker.commands.CommandConstants;
+import edu.java.bot.linktracker.commands.HelpCommand;
+import edu.java.bot.linktracker.commands.ListCommand;
+import edu.java.bot.linktracker.commands.StartCommand;
+import edu.java.bot.linktracker.commands.TrackCommand;
+import edu.java.bot.linktracker.commands.UntrackCommand;
 import edu.java.bot.linktracker.commands.processors.BasicUserCommandProcessor;
 import edu.java.bot.linktracker.links.LinkRepository;
 import edu.java.bot.linktracker.replies.ReplyConstants;
+import edu.java.bot.linktracker.replies.TrackReply;
+import edu.java.bot.linktracker.replies.UntrackReply;
 import edu.java.bot.linktracker.replies.processors.BasicUserReplyProcessor;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,8 +54,19 @@ public class LinkTrackerBotTests {
     @BeforeEach
     public void InitBot() {
         linksRepository = Mockito.mock(LinkRepository.class);
-        var messageProcessor = new BasicUserCommandProcessor(linksRepository);
-        var replyProcessor = new BasicUserReplyProcessor(linksRepository);
+        var commands = new ArrayList<>(List.of(
+            new ListCommand(linksRepository),
+            new StartCommand(),
+            new TrackCommand(),
+            new UntrackCommand()
+        ));
+        commands.add(new HelpCommand(commands));
+
+        var messageProcessor = new BasicUserCommandProcessor(commands);
+        var replyProcessor = new BasicUserReplyProcessor(List.of(
+                new TrackReply(linksRepository),
+                new UntrackReply(linksRepository)
+        ));
         linkTrackerBot = new LinkTrackerBot(bot, replyProcessor, messageProcessor);
     }
 

@@ -5,7 +5,9 @@ import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.linktracker.links.LinkRepository;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Component;
 
+@Component
 @AllArgsConstructor
 public class ListCommand implements Command {
     private final LinkRepository linkRepository;
