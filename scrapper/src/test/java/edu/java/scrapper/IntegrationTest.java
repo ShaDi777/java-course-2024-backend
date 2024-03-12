@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import liquibase.Contexts;
 import liquibase.LabelExpression;
 import liquibase.Liquibase;
@@ -41,38 +42,41 @@ public abstract class IntegrationTest {
 
     @SneakyThrows
     private static void runMigrations(JdbcDatabaseContainer<?> c) {
-        Connection connection = DriverManager.getConnection(c.getJdbcUrl(), c.getUsername(), c.getPassword());
-        Database database =
-            DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
+        try (Connection connection = DriverManager.getConnection(c.getJdbcUrl(), c.getUsername(), c.getPassword())) {
+            Database database =
+                DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
 
-        String scrapperProjectPath = new File("").getAbsolutePath();
-        Path projectPath = new File(scrapperProjectPath).toPath().getParent();
-        Path searchPath = projectPath.resolve("migrations");
+            String scrapperProjectPath = new File("").getAbsolutePath();
+            Path projectPath = new File(scrapperProjectPath).toPath().getParent();
+            Path searchPath = projectPath.resolve("migrations");
 
-        Liquibase liquibase = new liquibase.Liquibase(
-            "master.xml",
-            new DirectoryResourceAccessor(searchPath),
-            database
-        );
+            Liquibase liquibase = new liquibase.Liquibase(
+                "master.xml",
+                new DirectoryResourceAccessor(searchPath),
+                database
+            );
 
-        var contexts = new Contexts();
-        var labelExpression = new LabelExpression();
+            var contexts = new Contexts();
+            var labelExpression = new LabelExpression();
 
-        CommandScope updateCommand = new CommandScope(UpdateCommandStep.COMMAND_NAME);
-        updateCommand.addArgumentValue(DbUrlConnectionCommandStep.DATABASE_ARG, liquibase.getDatabase());
-        updateCommand.addArgumentValue(UpdateCommandStep.CHANGELOG_ARG, liquibase.getDatabaseChangeLog());
-        updateCommand.addArgumentValue(UpdateCommandStep.CHANGELOG_FILE_ARG, liquibase.getChangeLogFile());
-        updateCommand.addArgumentValue(UpdateCommandStep.CONTEXTS_ARG, contexts.toString());
-        updateCommand.addArgumentValue(UpdateCommandStep.LABEL_FILTER_ARG, labelExpression.getOriginalString());
-        updateCommand.addArgumentValue(
-            ChangeExecListenerCommandStep.CHANGE_EXEC_LISTENER_ARG,
-            liquibase.getDefaultChangeExecListener()
-        );
-        updateCommand.addArgumentValue(
-            DatabaseChangelogCommandStep.CHANGELOG_PARAMETERS,
-            liquibase.getChangeLogParameters()
-        );
-        updateCommand.execute();
+            CommandScope updateCommand = new CommandScope(UpdateCommandStep.COMMAND_NAME);
+            updateCommand.addArgumentValue(DbUrlConnectionCommandStep.DATABASE_ARG, liquibase.getDatabase());
+            updateCommand.addArgumentValue(UpdateCommandStep.CHANGELOG_ARG, liquibase.getDatabaseChangeLog());
+            updateCommand.addArgumentValue(UpdateCommandStep.CHANGELOG_FILE_ARG, liquibase.getChangeLogFile());
+            updateCommand.addArgumentValue(UpdateCommandStep.CONTEXTS_ARG, contexts.toString());
+            updateCommand.addArgumentValue(UpdateCommandStep.LABEL_FILTER_ARG, labelExpression.getOriginalString());
+            updateCommand.addArgumentValue(
+                ChangeExecListenerCommandStep.CHANGE_EXEC_LISTENER_ARG,
+                liquibase.getDefaultChangeExecListener()
+            );
+            updateCommand.addArgumentValue(
+                DatabaseChangelogCommandStep.CHANGELOG_PARAMETERS,
+                liquibase.getChangeLogParameters()
+            );
+            updateCommand.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @DynamicPropertySource
