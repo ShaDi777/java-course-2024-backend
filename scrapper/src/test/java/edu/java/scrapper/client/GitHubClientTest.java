@@ -57,6 +57,7 @@ public class GitHubClientTest {
     @Test
     public void testNoResponse() {
         setupStubServerError();
-        assertThrows(WebClientResponseException.class, () -> client.fetchRepository(OWNER, REPO));
+        GitHubResponse response = client.fetchRepository(OWNER, REPO);
+        assertThat(response).isNull();
     }
 }
