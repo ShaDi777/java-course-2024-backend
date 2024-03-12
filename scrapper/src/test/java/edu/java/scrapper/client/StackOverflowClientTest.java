@@ -57,6 +57,7 @@ public class StackOverflowClientTest {
     @Test
     public void testNoResponse() {
         setupStubServerError();
-        assertThrows(WebClientResponseException.class, () -> client.fetchQuestion(QUESTION_ID));
+        StackOverflowResponse response = client.fetchQuestion(QUESTION_ID);
+        assertThat(response).isNull();
     }
 }
