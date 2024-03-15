@@ -1,8 +1,8 @@
-package edu.java.client.dto;
+package edu.java.client.dto.stackoverflow;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record StackOverflowResponse(
+public record StackOverflowQuestionsResponse(
     @JsonProperty("items") StackOverflowItem[] items
 ) {
 }

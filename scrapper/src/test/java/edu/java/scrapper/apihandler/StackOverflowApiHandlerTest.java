@@ -1,13 +1,18 @@
 package edu.java.scrapper.apihandler;
 
-import edu.java.client.dto.StackOverflowItem;
-import edu.java.client.dto.StackOverflowResponse;
+import edu.java.client.dto.stackoverflow.StackOverflowComment;
+import edu.java.client.dto.stackoverflow.StackOverflowCommentsResponse;
+import edu.java.client.dto.stackoverflow.StackOverflowItem;
+import edu.java.client.dto.stackoverflow.StackOverflowQuestionsResponse;
 import edu.java.client.stackoverflow.StackOverflowClient;
 import edu.java.dao.model.Link;
+import edu.java.dao.model.StackOverflowLink;
+import edu.java.services.StackOverflowLinkService;
 import edu.java.services.apihandler.ApiHandler;
 import edu.java.services.apihandler.ApiHandlerResult;
 import edu.java.services.apihandler.StackOverflowApiHandler;
 import java.time.OffsetDateTime;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,7 +21,8 @@ import static org.mockito.Mockito.when;
 
 public class StackOverflowApiHandlerTest {
     private final StackOverflowClient client = Mockito.mock(StackOverflowClient.class);
-    private final ApiHandler apiHandler = new StackOverflowApiHandler(client);
+    private final StackOverflowLinkService stackOverflowLinkService = Mockito.mock(StackOverflowLinkService.class);
+    private final ApiHandler apiHandler = new StackOverflowApiHandler(client, stackOverflowLinkService);
 
     @Test
     void defaultResultWhenUnsupportedLink() {
@@ -38,8 +44,14 @@ public class StackOverflowApiHandlerTest {
     void noUpdatesResult() {
         when(client.fetchQuestion(any()))
             .thenReturn(
-                new StackOverflowResponse(new StackOverflowItem[] {
-                    new StackOverflowItem("title", OffsetDateTime.MIN)
+                new StackOverflowQuestionsResponse(new StackOverflowItem[] {
+                    new StackOverflowItem("title", true, 1, OffsetDateTime.MIN)
+                })
+            );
+        when(client.fetchComments(any()))
+            .thenReturn(
+                new StackOverflowCommentsResponse(new StackOverflowComment[] {
+                    new StackOverflowComment(OffsetDateTime.now())
                 })
             );
 
@@ -62,8 +74,14 @@ public class StackOverflowApiHandlerTest {
     void hasUpdateResult() {
         when(client.fetchQuestion(any()))
             .thenReturn(
-                new StackOverflowResponse(new StackOverflowItem[] {
-                    new StackOverflowItem("title", OffsetDateTime.now())
+                new StackOverflowQuestionsResponse(new StackOverflowItem[] {
+                    new StackOverflowItem("title", true, 1, OffsetDateTime.now())
+                })
+            );
+        when(client.fetchComments(any()))
+            .thenReturn(
+                new StackOverflowCommentsResponse(new StackOverflowComment[] {
+                    new StackOverflowComment(OffsetDateTime.now())
                 })
             );
 
@@ -80,6 +98,52 @@ public class StackOverflowApiHandlerTest {
 
         assertThat(result).isNotNull();
         assertThat(result.hasUpdate()).isTrue();
+    }
+
+    @Test
+    void hasUpdateWithNewAnswersComments() {
+        long questionId = 11227809;
+        long linkId = 1L;
+        when(stackOverflowLinkService.findById(linkId)).thenReturn(
+            Optional.of(
+                StackOverflowLink.builder()
+                    .linkId(1L)
+                    .isAnswered(false)
+                    .answersCount(0)
+                    .commentsCount(0)
+                    .build()
+            )
+        );
+        when(client.fetchQuestion(questionId))
+            .thenReturn(
+                new StackOverflowQuestionsResponse(new StackOverflowItem[] {
+                    new StackOverflowItem("title", true, 1, OffsetDateTime.now())
+                })
+            );
+        when(client.fetchComments(questionId))
+            .thenReturn(
+                new StackOverflowCommentsResponse(new StackOverflowComment[] {
+                    new StackOverflowComment(OffsetDateTime.now())
+                })
+            );
+
+        String supportedLinkUrl = "\"https://stackoverflow.com/questions/11227809/why-is-processing-a-sorted-array\"";
+
+        Link link = Link.builder()
+            .linkId(linkId)
+            .url(supportedLinkUrl)
+            .lastChecked(OffsetDateTime.now())
+            .lastModified(OffsetDateTime.MIN)
+            .build();
+
+        ApiHandlerResult result = apiHandler.handle(link);
+
+        assertThat(result).isNotNull();
+        assertThat(result.hasUpdate()).isTrue();
+        assertThat(result.description())
+            .contains(StackOverflowApiHandler.NEW_ANSWER_MESSAGE)
+            .contains(StackOverflowApiHandler.NEW_COMMENT_MESSAGE)
+            .contains(StackOverflowApiHandler.QUESTION_STATUS_CHANGE_MESSAGE + StackOverflowApiHandler.STATUS_ANSWERED);
     }
 }
 
