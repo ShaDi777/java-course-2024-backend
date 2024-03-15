@@ -1,6 +1,5 @@
 package edu.java.bot.services;
 
-import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.linktracker.bot.Bot;
 import lombok.RequiredArgsConstructor;

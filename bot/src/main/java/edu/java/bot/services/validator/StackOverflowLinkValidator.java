@@ -4,7 +4,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StackOverflowLinkValidator implements LinkValidator {
-    private static final Pattern PATTERN = Pattern.compile("https?://stackoverflow.com/questions/\\d+/.+", Pattern.CASE_INSENSITIVE);
+    private static final Pattern PATTERN =
+        Pattern.compile("https?://stackoverflow.com/questions/\\d+/.+", Pattern.CASE_INSENSITIVE);
     private LinkValidator nextValidator;
 
     @Override
