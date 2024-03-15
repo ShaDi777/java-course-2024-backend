@@ -8,7 +8,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 public class ScrapperLinksHttpClient {
-    private static final String BASE_URL = "http:///localhost:8080";
+    private static final String BASE_URL = "http://localhost:8080";
     private static final String PATH_LINKS = "/links";
     private static final String HEADER_TG_CHAT = "Tg-Chat-Id";
     private final WebClient webClient;

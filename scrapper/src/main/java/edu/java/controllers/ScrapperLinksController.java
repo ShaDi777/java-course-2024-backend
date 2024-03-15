@@ -4,8 +4,10 @@ import edu.java.controllers.dto.AddLinkRequest;
 import edu.java.controllers.dto.LinkResponse;
 import edu.java.controllers.dto.ListLinksResponse;
 import edu.java.controllers.dto.RemoveLinkRequest;
+import edu.java.mapping.LinkMapper;
+import edu.java.services.LinkService;
 import jakarta.validation.constraints.Min;
-import java.net.URI;
+import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,12 +19,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/links")
+@RequiredArgsConstructor
 public class ScrapperLinksController {
+    private final LinkMapper linkMapper;
+    private final LinkService linkService;
+
     @GetMapping
     public ListLinksResponse getTrackedLinks(
         @RequestHeader("Tg-Chat-Id") @Min(0) long tgChatId
     ) {
-        LinkResponse[] array = {null};
+        var array = linkService.listAllByChatId(tgChatId)
+            .stream()
+            .map(linkMapper::linkToResponse)
+            .toArray(LinkResponse[]::new);
+
         return new ListLinksResponse(array, array.length);
     }
 
@@ -31,7 +41,9 @@ public class ScrapperLinksController {
         @RequestHeader("Tg-Chat-Id") @Min(0) long tgChatId,
         @Validated @RequestBody AddLinkRequest request
     ) {
-        return new LinkResponse(tgChatId, URI.create(request.link()));
+        return linkMapper.linkToResponse(
+            linkService.add(tgChatId, request.link())
+        );
     }
 
     @DeleteMapping
@@ -39,6 +51,8 @@ public class ScrapperLinksController {
         @RequestHeader("Tg-Chat-Id") @Min(0) long tgChatId,
         @Validated @RequestBody RemoveLinkRequest request
     ) {
-        return new LinkResponse(tgChatId, URI.create(request.link()));
+        return linkMapper.linkToResponse(
+            linkService.remove(tgChatId, request.link())
+        );
     }
 }

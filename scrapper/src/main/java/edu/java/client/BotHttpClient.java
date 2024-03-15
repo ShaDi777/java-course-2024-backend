@@ -7,7 +7,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 public class BotHttpClient {
-    private static final String BASE_URL = "http:///localhost:8090";
+    private static final String BASE_URL = "http://localhost:8090";
     private static final String PATH_UPDATES = "/updates";
     private final WebClient webClient;
 

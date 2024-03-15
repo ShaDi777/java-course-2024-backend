@@ -26,7 +26,7 @@ public class StackOverflowWebClient implements StackOverflowClient {
     public StackOverflowResponse fetchQuestion(@NotNull Long questionId) {
         return this.webClient
             .get()
-            .uri("/questions/{questionId}", questionId)
+            .uri("/questions/{questionId}?site=stackoverflow", questionId)
             .retrieve()
             .onStatus(HttpStatus.NOT_FOUND::equals, (response) -> Mono.empty())
             .onStatus(HttpStatusCode::is5xxServerError, (response) -> {
