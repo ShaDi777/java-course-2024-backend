@@ -1,7 +1,6 @@
 package edu.java.domain.jooq.dao;
 
 import edu.java.domain.jooq.generated.tables.pojos.Link;
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
