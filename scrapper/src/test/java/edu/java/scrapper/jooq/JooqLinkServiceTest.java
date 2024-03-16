@@ -1,13 +1,13 @@
-package edu.java.scrapper.jdbc;
+package edu.java.scrapper.jooq;
 
-import edu.java.domain.jdbc.dao.JdbcLinkChatRepository;
-import edu.java.domain.jdbc.dao.JdbcLinkRepository;
-import edu.java.domain.jdbc.dao.JdbcTgChatRepository;
-import edu.java.domain.jdbc.model.Link;
+import edu.java.domain.jooq.dao.JooqLinkChatRepository;
+import edu.java.domain.jooq.dao.JooqLinkRepository;
+import edu.java.domain.jooq.dao.JooqTgChatRepository;
+import edu.java.domain.jooq.generated.tables.pojos.Link;
 import edu.java.exceptions.ResourceNotFoundException;
 import edu.java.scrapper.IntegrationTest;
-import edu.java.services.jdbc.JdbcLinkService;
-import edu.java.services.jdbc.JdbcTgChatService;
+import edu.java.services.jooq.JooqLinkService;
+import edu.java.services.jooq.JooqTgChatService;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -18,22 +18,21 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(properties="app.database-access-type=jdbc")
+@SpringBootTest(properties="app.database-access-type=jooq")
 @Testcontainers
-public class JdbcLinkServiceTest extends IntegrationTest {
+public class JooqLinkServiceTest extends IntegrationTest {
     private static final String TEST_LINK = "https://github.com/ShaDi777/java-course-2024-backend";
 
-    @Autowired private JdbcLinkRepository linkRepository;
-    @Autowired private JdbcTgChatRepository chatRepository;
-    @Autowired private JdbcLinkChatRepository linkChatRepository;
-    @Autowired private JdbcTgChatService chatService;
-    @Autowired private JdbcLinkService linkService;
+    @Autowired private JooqLinkRepository linkRepository;
+    @Autowired private JooqTgChatRepository chatRepository;
+    @Autowired private JooqLinkChatRepository linkChatRepository;
+    @Autowired private JooqTgChatService chatService;
+    @Autowired private JooqLinkService linkService;
 
     @Test
     @Transactional
@@ -56,7 +55,7 @@ public class JdbcLinkServiceTest extends IntegrationTest {
         linkService.add(chatId, TEST_LINK);
 
         assertThat(linkRepository.findByUrl(TEST_LINK)).isPresent();
-        assertThat(linkChatRepository.findAllLinksByChatId(chatId)).hasSize(1);
+        assertThat(linkChatRepository.findAllByChatId(chatId)).hasSize(1);
     }
 
     @Test
@@ -74,9 +73,9 @@ public class JdbcLinkServiceTest extends IntegrationTest {
         linkService.add(chatId2, TEST_LINK);
         linkService.add(chatId3, TEST_LINK);
 
-        assertThat(linkChatRepository.findAllLinksByChatId(chatId1)).hasSize(1);
-        assertThat(linkChatRepository.findAllLinksByChatId(chatId2)).hasSize(1);
-        assertThat(linkChatRepository.findAllLinksByChatId(chatId3)).hasSize(1);
+        assertThat(linkChatRepository.findAllByChatId(chatId1)).hasSize(1);
+        assertThat(linkChatRepository.findAllByChatId(chatId2)).hasSize(1);
+        assertThat(linkChatRepository.findAllByChatId(chatId3)).hasSize(1);
         assertThat(linkRepository.findByUrl(TEST_LINK)).isPresent();
     }
 
@@ -107,8 +106,8 @@ public class JdbcLinkServiceTest extends IntegrationTest {
 
         linkService.remove(chatId2, TEST_LINK);
 
-        assertThat(linkChatRepository.findAllLinksByChatId(chatId1)).isEmpty();
-        assertThat(linkChatRepository.findAllLinksByChatId(chatId2)).isEmpty();
+        assertThat(linkChatRepository.findAllByChatId(chatId1)).isEmpty();
+        assertThat(linkChatRepository.findAllByChatId(chatId2)).isEmpty();
         assertThat(linkRepository.findAll()).isEmpty();
     }
 

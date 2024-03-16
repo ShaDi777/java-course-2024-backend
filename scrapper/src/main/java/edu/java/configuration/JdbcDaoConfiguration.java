@@ -10,10 +10,12 @@ import edu.java.services.jdbc.JdbcLinkChatService;
 import edu.java.services.jdbc.JdbcLinkService;
 import edu.java.services.jdbc.JdbcStackOverflowLinkService;
 import edu.java.services.jdbc.JdbcTgChatService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@ConditionalOnProperty(prefix = "app", name = "database-access-type", havingValue = "jdbc")
 public class JdbcDaoConfiguration {
     @Bean
     public JdbcTgChatService jdbcChatService(

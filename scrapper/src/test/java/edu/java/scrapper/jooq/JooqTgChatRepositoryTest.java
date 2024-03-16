@@ -1,7 +1,7 @@
-package edu.java.scrapper.jdbc;
+package edu.java.scrapper.jooq;
 
-import edu.java.domain.jdbc.dao.JdbcTgChatRepository;
-import edu.java.domain.jdbc.model.TgChat;
+import edu.java.domain.jooq.dao.JooqTgChatRepository;
+import edu.java.domain.jooq.generated.tables.pojos.Chat;
 import edu.java.scrapper.IntegrationTest;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -12,21 +12,21 @@ import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(properties="app.database-access-type=jdbc")
+@SpringBootTest(properties="app.database-access-type=jooq")
 @Testcontainers
-public class JdbcTgChatRepositoryTest extends IntegrationTest {
+public class JooqTgChatRepositoryTest extends IntegrationTest {
     @Autowired
-    private JdbcTgChatRepository chatRepository;
+    private JooqTgChatRepository chatRepository;
 
     @Test
     @Transactional
     @Rollback
     void addNewChat() {
-        TgChat chat = new TgChat(1L);
+        Chat chat = new Chat(1L);
 
-        chatRepository.save(chat);
+        chatRepository.add(chat);
 
-        var chats = chatRepository.findAll();
+        var chats = chatRepository.getAll();
         assertThat(chats).contains(chat);
     }
 
@@ -35,12 +35,12 @@ public class JdbcTgChatRepositoryTest extends IntegrationTest {
     @Rollback
     void deleteExistingChat() {
         long chatId = 1L;
-        TgChat chat = new TgChat(chatId);
+        Chat chat = new Chat(chatId);
 
-        chatRepository.save(chat);
+        chatRepository.add(chat);
         chatRepository.deleteById(chatId);
 
-        var chats = chatRepository.findAll();
+        var chats = chatRepository.getAll();
         assertThat(chats).doesNotContain(chat);
     }
 
@@ -49,11 +49,11 @@ public class JdbcTgChatRepositoryTest extends IntegrationTest {
     @Rollback
     void deleteNonExistingChat() {
         long chatId = 1L;
-        TgChat chat = new TgChat(chatId);
+        Chat chat = new Chat(chatId);
 
         chatRepository.deleteById(chatId);
 
-        var chats = chatRepository.findAll();
+        var chats = chatRepository.getAll();
         assertThat(chats).doesNotContain(chat);
     }
 
@@ -62,11 +62,11 @@ public class JdbcTgChatRepositoryTest extends IntegrationTest {
     @Rollback
     void findByIdExist() {
         long chatId = 1L;
-        TgChat chat = new TgChat(chatId);
+        Chat chat = new Chat(chatId);
 
-        chatRepository.save(chat);
+        chatRepository.add(chat);
 
-        Optional<TgChat> foundChat = chatRepository.findById(chatId);
+        Optional<Chat> foundChat = chatRepository.getById(chatId);
         assertThat(foundChat).isPresent();
         assertThat(foundChat.get()).isEqualTo(chat);
     }
@@ -77,7 +77,7 @@ public class JdbcTgChatRepositoryTest extends IntegrationTest {
     void findByIdNotExist() {
         long chatId = 1L;
 
-        Optional<TgChat> foundChat = chatRepository.findById(chatId);
+        Optional<Chat> foundChat = chatRepository.getById(chatId);
         assertThat(foundChat).isEmpty();
     }
 }

@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@SpringBootTest(properties="app.database-access-type=jdbc")
 @Testcontainers
 public class JdbcStackOverflowLinkRepositoryTest extends IntegrationTest {
     public static final String TEST_URL =

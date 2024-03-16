@@ -3,6 +3,7 @@ app:
     enable: true
     interval: 10000
     force-check-delay: 10000
+  database-access-type: jooq
 
 spring:
   application:

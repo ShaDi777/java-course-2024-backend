@@ -22,4 +22,14 @@ public class LinkMapperImpl implements LinkMapper {
             link.getLastChecked()
         );
     }
+
+    @Override
+    public LinkInfoDto jooqLinkModelToDto(edu.java.domain.jooq.generated.tables.pojos.Link link) {
+        return new LinkInfoDto(
+            link.getLinkId(),
+            link.getUrl(),
+            link.getLastModified(),
+            link.getLastChecked()
+        );
+    }
 }

@@ -1,7 +1,7 @@
-package edu.java.scrapper.jdbc;
+package edu.java.scrapper.jooq;
 
-import edu.java.domain.jdbc.dao.JdbcLinkRepository;
-import edu.java.domain.jdbc.model.Link;
+import edu.java.domain.jooq.dao.JooqLinkRepository;
+import edu.java.domain.jooq.generated.tables.pojos.Link;
 import edu.java.scrapper.IntegrationTest;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -12,21 +12,23 @@ import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(properties="app.database-access-type=jdbc")
+@SpringBootTest(properties="app.database-access-type=jooq")
 @Testcontainers
-public class JdbcLinkRepositoryTest extends IntegrationTest {
+public class JooqLinkRepositoryTest extends IntegrationTest {
     private static final String TEST_LINK = "https://github.com/ShaDi777/java-course-2024-backend";
 
     @Autowired
-    private JdbcLinkRepository linkRepository;
+    private JooqLinkRepository linkRepository;
 
     @Test
     @Transactional
     @Rollback
     void addNewLink() {
-        Link link = Link.builder().linkId(1L).url(TEST_LINK).build();
+        Link link = new Link();
+        link.setLinkId(1L);
+        link.setUrl(TEST_LINK);
 
-        Link savedLink = linkRepository.save(link);
+        Link savedLink = linkRepository.add(link);
 
         var links = linkRepository.findAll();
         assertThat(links).contains(savedLink);
@@ -36,10 +38,12 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     void addExistingLink() {
-        Link link = Link.builder().linkId(1L).url(TEST_LINK).build();
+        Link link = new Link();
+        link.setLinkId(1L);
+        link.setUrl(TEST_LINK);
 
-        Link savedLink = linkRepository.save(link);
-        linkRepository.save(link);
+        Link savedLink = linkRepository.add(link);
+        linkRepository.add(link);
 
         var links = linkRepository.findAll();
         assertThat(links).containsOnlyOnce(savedLink);
@@ -49,10 +53,11 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     void deleteExistingLink() {
-        Link link = Link.builder().linkId(1L).url(TEST_LINK).build();
+        Link link = new Link();
+        link.setLinkId(1L);
+        link.setUrl(TEST_LINK);
 
-        Link savedLink = linkRepository.save(link);
-
+        Link savedLink = linkRepository.add(link);
         linkRepository.deleteById(savedLink.getLinkId());
 
         var chats = linkRepository.findAll();
@@ -75,8 +80,10 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     void findExistingLink() {
-        Link link = Link.builder().url(TEST_LINK).build();
-        Link savedLink = linkRepository.save(link);
+        Link link = new Link();
+        link.setLinkId(1L);
+        link.setUrl(TEST_LINK);
+        Link savedLink = linkRepository.add(link);
 
         Optional<Link> foundLinkById = linkRepository.findById(savedLink.getLinkId());
         Optional<Link> foundLinkByUrl = linkRepository.findByUrl(TEST_LINK);
