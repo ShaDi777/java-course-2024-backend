@@ -8,6 +8,7 @@ import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.SendResponse;
 import edu.java.bot.linktracker.bot.LinkTrackerBot;
+import edu.java.bot.linktracker.chats.ChatRepository;
 import edu.java.bot.linktracker.commands.CommandConstants;
 import edu.java.bot.linktracker.commands.HelpCommand;
 import edu.java.bot.linktracker.commands.ListCommand;
@@ -44,6 +45,7 @@ public class LinkTrackerBotTests {
     Update fakeUpdate = Mockito.mock(Update.class);
     LinkTrackerBot linkTrackerBot;
     LinkRepository linksRepository;
+    ChatRepository chatRepository;
 
     @Mock
     TelegramBot bot;
@@ -54,9 +56,10 @@ public class LinkTrackerBotTests {
     @BeforeEach
     public void InitBot() {
         linksRepository = Mockito.mock(LinkRepository.class);
+        chatRepository = Mockito.mock(ChatRepository.class);
         var commands = new ArrayList<>(List.of(
             new ListCommand(linksRepository),
-            new StartCommand(),
+            new StartCommand(chatRepository),
             new TrackCommand(),
             new UntrackCommand()
         ));

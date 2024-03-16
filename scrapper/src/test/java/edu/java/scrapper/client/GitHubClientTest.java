@@ -1,19 +1,17 @@
 package edu.java.scrapper.client;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
-import edu.java.client.dto.GitHubResponse;
+import edu.java.dto.github.GitHubResponse;
 import edu.java.client.github.GitHubClient;
 import edu.java.client.github.GitHubWebClient;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import org.junit.jupiter.api.Test;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @WireMockTest(httpPort = 9876)
 public class GitHubClientTest {
@@ -32,7 +30,7 @@ public class GitHubClientTest {
                 .withBody(
                     """
                         {
-                            "title": "%s",
+                            "name": "%s",
                             "updated_at": %d
                         }
                         """.formatted(REPO, LAST_MODIFIED.toEpochSecond()))

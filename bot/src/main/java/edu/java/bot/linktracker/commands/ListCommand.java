@@ -37,6 +37,6 @@ public class ListCommand implements Command {
             strBuilder.append(link);
         }
 
-        return new SendMessage(update.message().chat().id(), strBuilder.toString());
+        return new SendMessage(update.message().chat().id(), strBuilder.toString()).disableWebPagePreview(true);
     }
 }

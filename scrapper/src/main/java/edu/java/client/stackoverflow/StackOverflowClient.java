@@ -1,6 +1,6 @@
 package edu.java.client.stackoverflow;
 
-import edu.java.client.dto.StackOverflowResponse;
+import edu.java.dto.stackoverflow.StackOverflowResponse;
 import org.jetbrains.annotations.NotNull;
 
 public interface StackOverflowClient {

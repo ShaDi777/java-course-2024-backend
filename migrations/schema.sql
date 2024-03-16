@@ -17,3 +17,6 @@ CREATE TABLE link_chat (
      chat_id BIGINT NOT NULL REFERENCES chat (chat_id),
      PRIMARY KEY(link_id, chat_id)
 );
+
+--changeset shadi777:2
+ALTER TABLE link ALTER COLUMN last_modified SET DEFAULT now();

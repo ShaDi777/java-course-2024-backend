@@ -1,7 +1,8 @@
 package edu.java;
 
-import edu.java.controllers.dto.ApiErrorResponse;
-import edu.java.exceptions.ChatNotFoundException;
+import edu.java.dto.ApiErrorResponse;
+import edu.java.exceptions.ChatAlreadyExistsException;
+import edu.java.exceptions.ResourceNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import java.util.Arrays;
 import java.util.Objects;
@@ -17,13 +18,14 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 @RestControllerAdvice
 public class ScrapperExceptionHandler {
-    @ExceptionHandler({ChatNotFoundException.class, WebClientResponseException.class})
+    @ExceptionHandler({ResourceNotFoundException.class, WebClientResponseException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiErrorResponse handleNotFound(Exception exception, WebRequest request) {
         return createApiErrorResponse(exception, request, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({
+        ChatAlreadyExistsException.class,
         MethodArgumentNotValidException.class,
         HttpMessageNotReadableException.class,
         ConstraintViolationException.class,
@@ -40,6 +42,7 @@ public class ScrapperExceptionHandler {
             status.toString(),
             exception.getClass().getName(),
             exception.getMessage(),
-            Arrays.stream(exception.getStackTrace()).map(Objects::toString).toArray(String[]::new));
+            Arrays.stream(exception.getStackTrace()).map(Objects::toString).toArray(String[]::new)
+        );
     }
 }

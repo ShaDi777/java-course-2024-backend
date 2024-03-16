@@ -1,6 +1,6 @@
 package edu.java.client.github;
 
-import edu.java.client.dto.GitHubResponse;
+import edu.java.dto.github.GitHubResponse;
 import org.jetbrains.annotations.NotNull;
 
 public interface GitHubClient {
