@@ -2,10 +2,13 @@ package edu.java.configuration;
 
 import edu.java.domain.jdbc.dao.JdbcLinkChatRepository;
 import edu.java.domain.jdbc.dao.JdbcLinkRepository;
+import edu.java.domain.jdbc.dao.JdbcStackOverflowLinkRepository;
 import edu.java.domain.jdbc.dao.JdbcTgChatRepository;
 import edu.java.mapping.LinkMapper;
+import edu.java.mapping.StackOverflowLinkMapper;
 import edu.java.services.jdbc.JdbcLinkChatService;
 import edu.java.services.jdbc.JdbcLinkService;
+import edu.java.services.jdbc.JdbcStackOverflowLinkService;
 import edu.java.services.jdbc.JdbcTgChatService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,5 +40,13 @@ public class JdbcDaoConfiguration {
         LinkMapper linkMapper
     ) {
         return new JdbcLinkChatService(linkChatRepository, linkMapper);
+    }
+
+    @Bean
+    public JdbcStackOverflowLinkService stackOverflowLinkService(
+        JdbcStackOverflowLinkRepository stackOverflowLinkRepository,
+        StackOverflowLinkMapper stackOverflowLinkMapper
+    ) {
+        return new JdbcStackOverflowLinkService(stackOverflowLinkRepository, stackOverflowLinkMapper);
     }
 }

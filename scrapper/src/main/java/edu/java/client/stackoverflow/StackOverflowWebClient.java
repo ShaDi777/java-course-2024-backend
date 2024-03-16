@@ -1,5 +1,6 @@
 package edu.java.client.stackoverflow;
 
+import edu.java.dto.stackoverflow.StackOverflowCommentsResponse;
 import edu.java.dto.stackoverflow.StackOverflowResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +13,10 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class StackOverflowWebClient implements StackOverflowClient {
     private static final String BASE_URL = "https://api.stackexchange.com/2.3/";
+    private static final String SERVER_ERROR_LOG_WITH_STATUS_CODE = "StackOverflow server error. Status code: ";
+    private static final String WEBCLIENT_RESPONSE_EXCEPTION_LOG = "WebclientResponseException: ";
+    private static final String UNKNOWN_EXCEPTION_LOG = "Unknown exception occurred! ";
+
     private final WebClient webClient;
 
     public StackOverflowWebClient() {
@@ -30,16 +35,39 @@ public class StackOverflowWebClient implements StackOverflowClient {
             .retrieve()
             .onStatus(HttpStatus.NOT_FOUND::equals, (response) -> Mono.empty())
             .onStatus(HttpStatusCode::is5xxServerError, (response) -> {
-                log.error("StackOverflow server error. Status code: " + response.statusCode());
+                log.error(SERVER_ERROR_LOG_WITH_STATUS_CODE + response.statusCode());
                 return Mono.empty();
             })
             .bodyToMono(StackOverflowResponse.class)
             .onErrorMap(WebClientResponseException.class, (throwable) -> {
-                log.error("WebclientResponseException: " + throwable.getResponseBodyAsString());
+                log.error(WEBCLIENT_RESPONSE_EXCEPTION_LOG + throwable.getResponseBodyAsString());
                 return null;
             })
             .onErrorMap(Exception.class, (throwable) -> {
-                log.error("Unknown exception occurred! " + throwable.getMessage());
+                log.error(UNKNOWN_EXCEPTION_LOG + throwable.getMessage());
+                return null;
+            })
+            .block();
+    }
+
+    @Override
+    public StackOverflowCommentsResponse fetchComments(@NotNull Long questionId) {
+        return this.webClient
+            .get()
+            .uri("/questions/{questionId}/comments?site=stackoverflow", questionId)
+            .retrieve()
+            .onStatus(HttpStatus.NOT_FOUND::equals, (response) -> Mono.empty())
+            .onStatus(HttpStatusCode::is5xxServerError, (response) -> {
+                log.error(SERVER_ERROR_LOG_WITH_STATUS_CODE + response.statusCode());
+                return Mono.empty();
+            })
+            .bodyToMono(StackOverflowCommentsResponse.class)
+            .onErrorMap(WebClientResponseException.class, (throwable) -> {
+                log.error(WEBCLIENT_RESPONSE_EXCEPTION_LOG + throwable.getResponseBodyAsString());
+                return null;
+            })
+            .onErrorMap(Exception.class, (throwable) -> {
+                log.error(UNKNOWN_EXCEPTION_LOG + throwable.getMessage());
                 return null;
             })
             .block();
