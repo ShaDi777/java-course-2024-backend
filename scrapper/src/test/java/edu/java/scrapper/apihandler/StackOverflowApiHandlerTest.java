@@ -1,9 +1,9 @@
 package edu.java.scrapper.apihandler;
 
-import edu.java.client.dto.StackOverflowItem;
-import edu.java.client.dto.StackOverflowResponse;
 import edu.java.client.stackoverflow.StackOverflowClient;
-import edu.java.dao.model.Link;
+import edu.java.dto.link.LinkInfoDto;
+import edu.java.dto.stackoverflow.StackOverflowItem;
+import edu.java.dto.stackoverflow.StackOverflowResponse;
 import edu.java.services.apihandler.ApiHandler;
 import edu.java.services.apihandler.ApiHandlerResult;
 import edu.java.services.apihandler.StackOverflowApiHandler;
@@ -21,7 +21,7 @@ public class StackOverflowApiHandlerTest {
     @Test
     void defaultResultWhenUnsupportedLink() {
         String unsupportedDomainUrl = "https://github.com/ShaDi777/java-course-2024-backend";
-        Link link = Link.builder()
+        LinkInfoDto link = LinkInfoDto.builder()
             .linkId(1L)
             .url(unsupportedDomainUrl)
             .lastChecked(OffsetDateTime.now())
@@ -45,7 +45,7 @@ public class StackOverflowApiHandlerTest {
 
         String supportedLinkUrl = "https://stackoverflow.com/questions/11227809/why-is-processing-a-sorted-array";
 
-        Link link = Link.builder()
+        LinkInfoDto link = LinkInfoDto.builder()
             .linkId(1L)
             .url(supportedLinkUrl)
             .lastChecked(OffsetDateTime.now())
@@ -69,7 +69,7 @@ public class StackOverflowApiHandlerTest {
 
         String supportedLinkUrl = "\"https://stackoverflow.com/questions/11227809/why-is-processing-a-sorted-array\"";
 
-        Link link = Link.builder()
+        LinkInfoDto link = LinkInfoDto.builder()
             .linkId(1L)
             .url(supportedLinkUrl)
             .lastChecked(OffsetDateTime.now())

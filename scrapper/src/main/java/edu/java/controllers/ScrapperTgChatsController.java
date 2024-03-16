@@ -1,6 +1,6 @@
 package edu.java.controllers;
 
-import edu.java.controllers.dto.TgChatResponse;
+import edu.java.dto.chat.TgChatResponse;
 import edu.java.services.TgChatService;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package edu.java;
 
-import edu.java.controllers.dto.ApiErrorResponse;
+import edu.java.dto.ApiErrorResponse;
 import edu.java.exceptions.ChatAlreadyExistsException;
 import edu.java.exceptions.ResourceNotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -42,6 +42,7 @@ public class ScrapperExceptionHandler {
             status.toString(),
             exception.getClass().getName(),
             exception.getMessage(),
-            Arrays.stream(exception.getStackTrace()).map(Objects::toString).toArray(String[]::new));
+            Arrays.stream(exception.getStackTrace()).map(Objects::toString).toArray(String[]::new)
+        );
     }
 }

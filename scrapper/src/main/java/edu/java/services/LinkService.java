@@ -1,22 +1,17 @@
 package edu.java.services;
 
-import edu.java.dao.model.Link;
-import edu.java.dao.model.TgChat;
+import edu.java.dto.link.LinkInfoDto;
 import java.time.OffsetDateTime;
-import java.util.Collection;
+import java.util.List;
 
 public interface LinkService {
-    Link add(long tgChatId, String url);
+    LinkInfoDto add(long tgChatId, String url);
 
-    Link remove(long tgChatId, String url);
+    LinkInfoDto remove(long tgChatId, String url);
 
-    Collection<Link> listAllByChatId(long tgChatId);
+    List<LinkInfoDto> listByOldestCheck(int count);
 
-    Collection<TgChat> listAllByLinkId(long linkId);
-
-    Collection<Link> listByOldestCheck(int count);
-
-    Collection<Link> listAll();
+    List<LinkInfoDto> listAll();
 
     void updateLastModified(long linkId, OffsetDateTime offsetDateTime);
 

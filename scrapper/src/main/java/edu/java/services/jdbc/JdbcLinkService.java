@@ -1,54 +1,91 @@
 package edu.java.services.jdbc;
 
-import edu.java.dao.jdbc.JdbcLinkRepository;
-import edu.java.dao.model.Link;
-import edu.java.dao.model.TgChat;
+import edu.java.domain.jdbc.dao.JdbcLinkChatRepository;
+import edu.java.domain.jdbc.dao.JdbcLinkRepository;
+import edu.java.domain.jdbc.dao.JdbcTgChatRepository;
+import edu.java.domain.jdbc.model.Link;
+import edu.java.domain.jdbc.model.LinkChat;
+import edu.java.dto.link.LinkInfoDto;
+import edu.java.exceptions.ResourceNotFoundException;
+import edu.java.mapping.LinkMapper;
 import edu.java.services.LinkService;
 import java.time.OffsetDateTime;
-import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @RequiredArgsConstructor
 public class JdbcLinkService implements LinkService {
+    private final JdbcTgChatRepository chatRepository;
     private final JdbcLinkRepository linkRepository;
+    private final JdbcLinkChatRepository linkChatRepository;
+    private final LinkMapper linkMapper;
 
     @Override
-    public Link add(long tgChatId, String url) {
-        return linkRepository.add(tgChatId, url);
+    public LinkInfoDto add(long tgChatId, String url) {
+        if (chatRepository.findById(tgChatId).isEmpty()) {
+            throw ResourceNotFoundException.chatNotFound(tgChatId);
+        }
+
+        Optional<Link> optionalLink = linkRepository.findByUrl(url);
+        Link link = optionalLink.orElseGet(() -> linkRepository.save(Link.builder().url(url).build()));
+
+        linkChatRepository.save(
+            LinkChat.builder()
+                .linkId(link.getLinkId())
+                .chatId(tgChatId)
+                .build()
+        );
+
+        return linkMapper.jdbcLinkModelToDto(link);
     }
 
     @Override
-    public Link remove(long tgChatId, String url) {
-        return linkRepository.remove(tgChatId, url);
+    public LinkInfoDto remove(long tgChatId, String url) {
+        Link link = linkRepository.findByUrl(url)
+            .orElseThrow(() -> ResourceNotFoundException.chatLinkNotFound(tgChatId, url));
+        linkChatRepository.deleteByIds(link.getLinkId(), tgChatId);
+
+        if (linkChatRepository.findAllChatsByLinkId(link.getLinkId()).isEmpty()) {
+            linkRepository.deleteById(link.getLinkId());
+        }
+
+        return linkMapper.jdbcLinkModelToDto(link);
     }
 
     @Override
-    public Collection<Link> listAllByChatId(long tgChatId) {
-        return linkRepository.findAllLinksByChatId(tgChatId);
+    public List<LinkInfoDto> listByOldestCheck(int count) {
+        return linkRepository.findNLinksByOldestLastCheck(count)
+            .stream()
+            .map(linkMapper::jdbcLinkModelToDto)
+            .toList();
     }
 
     @Override
-    public Collection<TgChat> listAllByLinkId(long linkId) {
-        return linkRepository.findAllChatsByLinkId(linkId);
-    }
-
-    @Override
-    public Collection<Link> listByOldestCheck(int count) {
-        return linkRepository.findNLinksByOldestLastCheck(count);
-    }
-
-    @Override
-    public Collection<Link> listAll() {
-        return linkRepository.findAll();
+    public List<LinkInfoDto> listAll() {
+        return linkRepository.findAll()
+            .stream()
+            .map(linkMapper::jdbcLinkModelToDto)
+            .toList();
     }
 
     @Override
     public void updateLastModified(long linkId, OffsetDateTime offsetDateTime) {
-        linkRepository.updateLastModified(linkId, offsetDateTime);
+        Link link = linkRepository.findById(linkId)
+            .orElseThrow(() -> ResourceNotFoundException.linkNotFound(linkId));
+
+        link.setLastModified(offsetDateTime);
+        linkRepository.updateLink(link);
     }
 
     @Override
     public void updateLastChecked(long linkId, OffsetDateTime offsetDateTime) {
-        linkRepository.updateLastChecked(linkId, offsetDateTime);
+        Link link = linkRepository.findById(linkId)
+            .orElseThrow(() -> ResourceNotFoundException.linkNotFound(linkId));
+
+        link.setLastChecked(offsetDateTime);
+        linkRepository.updateLink(link);
     }
 }

@@ -1,6 +1,6 @@
 package edu.java.client.stackoverflow;
 
-import edu.java.client.dto.StackOverflowResponse;
+import edu.java.dto.stackoverflow.StackOverflowResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;

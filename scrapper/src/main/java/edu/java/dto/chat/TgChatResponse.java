@@ -1,4 +1,4 @@
-package edu.java.controllers.dto;
+package edu.java.dto.chat;
 
 public record TgChatResponse() {
 }

@@ -1,12 +1,10 @@
-package edu.java.dao.model;
+package edu.java.dto.chat;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
 @AllArgsConstructor
-public class TgChat {
+public class TgChatInfoDto {
     private Long chatId;
 }

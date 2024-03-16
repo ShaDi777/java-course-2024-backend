@@ -1,8 +1,8 @@
 package edu.java.scrapper.apihandler;
 
-import edu.java.client.dto.GitHubResponse;
 import edu.java.client.github.GitHubClient;
-import edu.java.dao.model.Link;
+import edu.java.dto.github.GitHubResponse;
+import edu.java.dto.link.LinkInfoDto;
 import edu.java.services.apihandler.ApiHandler;
 import edu.java.services.apihandler.ApiHandlerResult;
 import edu.java.services.apihandler.GitHubApiHandler;
@@ -20,7 +20,7 @@ public class GitHubApiHandlerTest {
     @Test
     void defaultResultWhenUnsupportedLink() {
         String unsupportedDomainUrl = "https://stackoverflow.com/questions/11227809/why-is-processing-a-sorted-array";
-        Link link = Link.builder()
+        LinkInfoDto link = LinkInfoDto.builder()
             .linkId(1L)
             .url(unsupportedDomainUrl)
             .lastChecked(OffsetDateTime.now())
@@ -40,7 +40,7 @@ public class GitHubApiHandlerTest {
 
         String supportedLinkUrl = "https://github.com/ShaDi777/java-course-2024-backend";
 
-        Link link = Link.builder()
+        LinkInfoDto link = LinkInfoDto.builder()
             .linkId(1L)
             .url(supportedLinkUrl)
             .lastChecked(OffsetDateTime.now())
@@ -60,7 +60,7 @@ public class GitHubApiHandlerTest {
 
         String supportedLinkUrl = "https://github.com/ShaDi777/java-course-2024-backend";
 
-        Link link = Link.builder()
+        LinkInfoDto link = LinkInfoDto.builder()
             .linkId(1L)
             .url(supportedLinkUrl)
             .lastChecked(OffsetDateTime.now())

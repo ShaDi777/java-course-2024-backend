@@ -1,9 +1,9 @@
 package edu.java.services.apihandler;
 
-import edu.java.client.dto.StackOverflowItem;
-import edu.java.client.dto.StackOverflowResponse;
 import edu.java.client.stackoverflow.StackOverflowClient;
-import edu.java.dao.model.Link;
+import edu.java.dto.link.LinkInfoDto;
+import edu.java.dto.stackoverflow.StackOverflowItem;
+import edu.java.dto.stackoverflow.StackOverflowResponse;
 import edu.java.utils.LinkUtils;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +15,12 @@ public class StackOverflowApiHandler implements ApiHandler {
     private ApiHandler nextHandler = null;
 
     @Override
-    public ApiHandlerResult handle(Link link) {
+    public ApiHandlerResult handle(LinkInfoDto link) {
         if (link == null || link.getUrl() == null) {
             return ApiHandlerResult.getDefault();
         }
 
-        if (supports(link)) {
+        if (supports(link.getUrl())) {
             List<String> extensions = LinkUtils.getExtensions(link.getUrl());
             if (extensions.size() < 2) {
                 return ApiHandlerResult.getDefault();
@@ -40,8 +40,8 @@ public class StackOverflowApiHandler implements ApiHandler {
     }
 
     @Override
-    public boolean supports(Link link) {
-        return LinkUtils.getDomainName(link.getUrl()).equalsIgnoreCase(STACKOVERFLOW_DOMAIN_NAME);
+    public boolean supports(String linkUrl) {
+        return LinkUtils.getDomainName(linkUrl).equalsIgnoreCase(STACKOVERFLOW_DOMAIN_NAME);
     }
 
     @Override

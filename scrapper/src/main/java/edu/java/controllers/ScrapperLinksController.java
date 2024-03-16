@@ -1,10 +1,11 @@
 package edu.java.controllers;
 
-import edu.java.controllers.dto.AddLinkRequest;
-import edu.java.controllers.dto.LinkResponse;
-import edu.java.controllers.dto.ListLinksResponse;
-import edu.java.controllers.dto.RemoveLinkRequest;
+import edu.java.dto.link.AddLinkRequest;
+import edu.java.dto.link.LinkResponse;
+import edu.java.dto.link.ListLinksResponse;
+import edu.java.dto.link.RemoveLinkRequest;
 import edu.java.mapping.LinkMapper;
+import edu.java.services.LinkChatService;
 import edu.java.services.LinkService;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -23,14 +24,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class ScrapperLinksController {
     private final LinkMapper linkMapper;
     private final LinkService linkService;
+    private final LinkChatService linkChatService;
 
     @GetMapping
     public ListLinksResponse getTrackedLinks(
         @RequestHeader("Tg-Chat-Id") @Min(0) long tgChatId
     ) {
-        var array = linkService.listAllByChatId(tgChatId)
+        var array = linkChatService.listAllLinksByChatId(tgChatId)
             .stream()
-            .map(linkMapper::linkToResponse)
+            .map(linkMapper::linkInfoDtoToResponse)
             .toArray(LinkResponse[]::new);
 
         return new ListLinksResponse(array, array.length);
@@ -41,7 +43,7 @@ public class ScrapperLinksController {
         @RequestHeader("Tg-Chat-Id") @Min(0) long tgChatId,
         @Validated @RequestBody AddLinkRequest request
     ) {
-        return linkMapper.linkToResponse(
+        return linkMapper.linkInfoDtoToResponse(
             linkService.add(tgChatId, request.link())
         );
     }
@@ -51,7 +53,7 @@ public class ScrapperLinksController {
         @RequestHeader("Tg-Chat-Id") @Min(0) long tgChatId,
         @Validated @RequestBody RemoveLinkRequest request
     ) {
-        return linkMapper.linkToResponse(
+        return linkMapper.linkInfoDtoToResponse(
             linkService.remove(tgChatId, request.link())
         );
     }

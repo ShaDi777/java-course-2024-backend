@@ -1,4 +1,4 @@
-package edu.java.controllers.dto;
+package edu.java.dto;
 
 public record ApiErrorResponse(
     String description,

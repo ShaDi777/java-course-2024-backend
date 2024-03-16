@@ -1,8 +1,8 @@
 package edu.java.services.apihandler;
 
-import edu.java.client.dto.GitHubResponse;
 import edu.java.client.github.GitHubClient;
-import edu.java.dao.model.Link;
+import edu.java.dto.github.GitHubResponse;
+import edu.java.dto.link.LinkInfoDto;
 import edu.java.utils.LinkUtils;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +14,12 @@ public class GitHubApiHandler implements ApiHandler {
     private ApiHandler nextHandler = null;
 
     @Override
-    public ApiHandlerResult handle(Link link) {
+    public ApiHandlerResult handle(LinkInfoDto link) {
         if (link == null || link.getUrl() == null) {
             return ApiHandlerResult.getDefault();
         }
 
-        if (supports(link)) {
+        if (supports(link.getUrl())) {
             List<String> extensions = LinkUtils.getExtensions(link.getUrl());
             if (extensions.size() < 2) {
                 return ApiHandlerResult.getDefault();
@@ -36,8 +36,8 @@ public class GitHubApiHandler implements ApiHandler {
     }
 
     @Override
-    public boolean supports(Link link) {
-        return LinkUtils.getDomainName(link.getUrl()).equalsIgnoreCase(GITHUB_DOMAIN_NAME);
+    public boolean supports(String linkUrl) {
+        return LinkUtils.getDomainName(linkUrl).equalsIgnoreCase(GITHUB_DOMAIN_NAME);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package edu.java.client.dto.bot;
+package edu.java.dto.bot;
 
 import jakarta.validation.constraints.Min;
 import java.net.URI;

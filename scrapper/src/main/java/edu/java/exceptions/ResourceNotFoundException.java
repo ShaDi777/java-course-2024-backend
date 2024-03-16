@@ -9,7 +9,11 @@ public class ResourceNotFoundException extends RuntimeException {
         return new ResourceNotFoundException(String.format("Chat %d not found.", tgChatId));
     }
 
-    public static ResourceNotFoundException linkNotFound(long tgChatId, String url) {
+    public static ResourceNotFoundException chatLinkNotFound(long tgChatId, String url) {
         return new ResourceNotFoundException(String.format("In chat %d link %s not found", tgChatId, url));
+    }
+
+    public static ResourceNotFoundException linkNotFound(long linkId) {
+        return new ResourceNotFoundException(String.format("Link %d not found", linkId));
     }
 }

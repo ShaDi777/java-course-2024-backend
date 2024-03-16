@@ -1,4 +1,4 @@
-package edu.java.controllers.dto;
+package edu.java.dto.link;
 
 import java.net.URI;
 

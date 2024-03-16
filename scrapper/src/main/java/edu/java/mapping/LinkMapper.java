@@ -1,8 +1,11 @@
 package edu.java.mapping;
 
-import edu.java.controllers.dto.LinkResponse;
-import edu.java.dao.model.Link;
+import edu.java.domain.jdbc.model.Link;
+import edu.java.dto.link.LinkInfoDto;
+import edu.java.dto.link.LinkResponse;
 
 public interface LinkMapper {
-    LinkResponse linkToResponse(Link link);
+    LinkResponse linkInfoDtoToResponse(LinkInfoDto link);
+
+    LinkInfoDto jdbcLinkModelToDto(Link link);
 }

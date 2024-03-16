@@ -1,7 +1,10 @@
 package edu.java.configuration;
 
-import edu.java.dao.jdbc.JdbcLinkRepository;
-import edu.java.dao.jdbc.JdbcTgChatRepository;
+import edu.java.domain.jdbc.dao.JdbcLinkChatRepository;
+import edu.java.domain.jdbc.dao.JdbcLinkRepository;
+import edu.java.domain.jdbc.dao.JdbcTgChatRepository;
+import edu.java.mapping.LinkMapper;
+import edu.java.services.jdbc.JdbcLinkChatService;
 import edu.java.services.jdbc.JdbcLinkService;
 import edu.java.services.jdbc.JdbcTgChatService;
 import org.springframework.context.annotation.Bean;
@@ -10,12 +13,29 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class JdbcDaoConfiguration {
     @Bean
-    public JdbcTgChatService jdbcChatService(JdbcTgChatRepository chatRepository) {
-        return new JdbcTgChatService(chatRepository);
+    public JdbcTgChatService jdbcChatService(
+        JdbcLinkRepository linkRepository,
+        JdbcTgChatRepository chatRepository,
+        JdbcLinkChatRepository linkChatRepository
+    ) {
+        return new JdbcTgChatService(linkRepository, chatRepository, linkChatRepository);
     }
 
     @Bean
-    public JdbcLinkService jdbcLinkService(JdbcLinkRepository linkRepository) {
-        return new JdbcLinkService(linkRepository);
+    public JdbcLinkService jdbcLinkService(
+        JdbcTgChatRepository chatRepository,
+        JdbcLinkRepository linkRepository,
+        JdbcLinkChatRepository linkChatRepository,
+        LinkMapper linkMapper
+    ) {
+        return new JdbcLinkService(chatRepository, linkRepository, linkChatRepository, linkMapper);
+    }
+
+    @Bean
+    public JdbcLinkChatService jdbcLinkChatService(
+        JdbcLinkChatRepository linkChatRepository,
+        LinkMapper linkMapper
+    ) {
+        return new JdbcLinkChatService(linkChatRepository, linkMapper);
     }
 }
