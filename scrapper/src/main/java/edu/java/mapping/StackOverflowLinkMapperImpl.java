@@ -47,4 +47,25 @@ public class StackOverflowLinkMapperImpl implements StackOverflowLinkMapper {
             .commentsCount(link.getCommentsCount())
             .build();
     }
+
+    @Override
+    public edu.java.domain.jpa.model.StackOverflowLink dtoToJpaModel(StackOverflowLinkDto link) {
+        var linkModel = new edu.java.domain.jpa.model.StackOverflowLink();
+        linkModel.setLinkId(link.getLinkId());
+        linkModel.setAnswersCount(link.getAnswersCount());
+        linkModel.setIsAnswered(link.getIsAnswered());
+        linkModel.setCommentsCount(link.getCommentsCount());
+
+        return linkModel;
+    }
+
+    @Override
+    public StackOverflowLinkDto jpaModelToDto(edu.java.domain.jpa.model.StackOverflowLink link) {
+        return StackOverflowLinkDto.builder()
+            .linkId(link.getLinkId())
+            .answersCount(link.getAnswersCount())
+            .isAnswered(link.getIsAnswered())
+            .commentsCount(link.getCommentsCount())
+            .build();
+    }
 }
