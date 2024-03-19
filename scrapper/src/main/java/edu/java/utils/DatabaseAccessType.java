@@ -1,5 +1,5 @@
 package edu.java.utils;
 
 public enum DatabaseAccessType {
-    JDBC, JOOQ
+    JDBC, JOOQ, JPA
 }

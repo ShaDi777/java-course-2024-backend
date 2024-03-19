@@ -32,4 +32,14 @@ public class LinkMapperImpl implements LinkMapper {
             link.getLastChecked()
         );
     }
+
+    @Override
+    public LinkInfoDto jpaLinkModelToDto(edu.java.domain.jpa.model.Link link) {
+        return new LinkInfoDto(
+            link.getLinkId(),
+            link.getUrl(),
+            link.getLastModified(),
+            link.getLastChecked()
+        );
+    }
 }
