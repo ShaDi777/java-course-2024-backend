@@ -1,5 +1,15 @@
 app:
   telegram-token: ${TG_TOKEN}
+  rate-limiter:
+    enable: true
+    limit: 120
+    refill-per-minute: 120
+  retry-specification:
+    back-off-type: fixed
+    max-attempts: 3
+    delay: 10000
+    jitter: 0.5
+    codes: 429, 500, 501, 502, 503, 504
 
 spring:
   application:

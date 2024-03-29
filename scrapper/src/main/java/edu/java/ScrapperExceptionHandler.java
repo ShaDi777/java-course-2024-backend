@@ -3,6 +3,7 @@ package edu.java;
 import edu.java.dto.ApiErrorResponse;
 import edu.java.exceptions.ChatAlreadyExistsException;
 import edu.java.exceptions.ResourceNotFoundException;
+import edu.java.exceptions.TooManyRequestsException;
 import jakarta.validation.ConstraintViolationException;
 import java.util.Arrays;
 import java.util.Objects;
@@ -18,7 +19,13 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 @RestControllerAdvice
 public class ScrapperExceptionHandler {
-    @ExceptionHandler({ResourceNotFoundException.class, WebClientResponseException.class})
+    @ExceptionHandler({TooManyRequestsException.class})
+    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+    public ApiErrorResponse handleTooManyRequests(Exception exception, WebRequest request) {
+        return createApiErrorResponse(exception, request, HttpStatus.TOO_MANY_REQUESTS);
+    }
+
+    @ExceptionHandler({ResourceNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiErrorResponse handleNotFound(Exception exception, WebRequest request) {
         return createApiErrorResponse(exception, request, HttpStatus.NOT_FOUND);
@@ -29,7 +36,8 @@ public class ScrapperExceptionHandler {
         MethodArgumentNotValidException.class,
         HttpMessageNotReadableException.class,
         ConstraintViolationException.class,
-        MethodArgumentTypeMismatchException.class
+        MethodArgumentTypeMismatchException.class,
+        WebClientResponseException.class
     })
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ApiErrorResponse handleBadRequest(Exception exception, WebRequest request) {
