@@ -20,6 +20,11 @@ public class FixedRateLimitService implements RateLimitService {
         return cache.computeIfAbsent(ip, this::newBucket);
     }
 
+    @Override
+    public void clearAllBuckets() {
+        cache.clear();
+    }
+
     private Bucket newBucket(String ip) {
         ApplicationConfig.RateLimiter rateLimiter = appConfig.rateLimiter();
 
