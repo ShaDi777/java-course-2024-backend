@@ -9,7 +9,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: link-tracker-bot
+  IMAGE_NAME:  ${{ github.repository }}/link-tracker-bot
 
 jobs:
   build:
