@@ -18,7 +18,6 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Limit;
 
-@Transactional
 @RequiredArgsConstructor
 public class JpaLinkService implements LinkService {
     private final JpaTgChatRepository chatRepository;
@@ -26,6 +25,7 @@ public class JpaLinkService implements LinkService {
     private final JpaStackOverflowRepository stackOverflowRepository;
     private final LinkMapper linkMapper;
 
+    @Transactional
     @Override
     public LinkInfoDto add(long tgChatId, String url) {
         Optional<Chat> chatOptional = chatRepository.findById(tgChatId);
@@ -47,6 +47,7 @@ public class JpaLinkService implements LinkService {
         return linkMapper.jpaLinkModelToDto(link);
     }
 
+    @Transactional
     @Override
     public LinkInfoDto remove(long tgChatId, String url) {
         Optional<Chat> chatOptional = chatRepository.findById(tgChatId);
@@ -83,6 +84,7 @@ public class JpaLinkService implements LinkService {
             .toList();
     }
 
+    @Transactional
     @Override
     public void updateLastModified(long linkId, OffsetDateTime offsetDateTime) {
         Optional<Link> linkOptional = linkRepository.findById(linkId);
@@ -95,6 +97,7 @@ public class JpaLinkService implements LinkService {
         linkRepository.save(link);
     }
 
+    @Transactional
     @Override
     public void updateLastChecked(long linkId, OffsetDateTime offsetDateTime) {
         Optional<Link> linkOptional = linkRepository.findById(linkId);
