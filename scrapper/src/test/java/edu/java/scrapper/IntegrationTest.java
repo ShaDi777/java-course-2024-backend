@@ -84,5 +84,8 @@ public abstract class IntegrationTest {
         registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
         registry.add("spring.datasource.username", POSTGRES::getUsername);
         registry.add("spring.datasource.password", POSTGRES::getPassword);
+        registry.add("spring.liquibase.enabled", () -> false);
+        registry.add("app.scheduler.enable", () -> false);
+        registry.add("app.use-queue", () -> false);
     }
 }
