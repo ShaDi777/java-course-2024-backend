@@ -14,16 +14,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/tg-chat")
 @RequiredArgsConstructor
 public class ScrapperTgChatsController {
+    private static final String ID = "id";
+    private static final String PATH_ID = "/{id}";
+
     private final TgChatService tgChatService;
 
-    @PostMapping("/{id}")
-    public TgChatResponse addChat(@PathVariable("id") @Min(0) long tgChatId) {
+    @PostMapping(PATH_ID)
+    public TgChatResponse addChat(@PathVariable(ID) @Min(0) long tgChatId) {
         tgChatService.register(tgChatId);
         return new TgChatResponse();
     }
 
-    @DeleteMapping("/{id}")
-    public TgChatResponse deleteChat(@PathVariable("id") @Min(0) long tgChatId) {
+    @DeleteMapping(PATH_ID)
+    public TgChatResponse deleteChat(@PathVariable(ID) @Min(0) long tgChatId) {
         tgChatService.unregister(tgChatId);
         return new TgChatResponse();
     }
