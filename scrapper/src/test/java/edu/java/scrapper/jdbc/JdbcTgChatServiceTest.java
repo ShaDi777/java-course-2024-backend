@@ -16,7 +16,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest
+@SpringBootTest(properties="app.database-access-type=jdbc")
 @Testcontainers
 public class JdbcTgChatServiceTest extends IntegrationTest {
     @Autowired private JdbcTgChatRepository chatRepository;

@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@SpringBootTest(properties="app.database-access-type=jdbc")
 @Testcontainers
 public class JdbcLinkRepositoryTest extends IntegrationTest {
     private static final String TEST_LINK = "https://github.com/ShaDi777/java-course-2024-backend";

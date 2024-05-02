@@ -9,14 +9,17 @@ import org.springframework.context.annotation.Primary;
 
 @Configuration
 public class LinkValidatorConfiguration {
-    @Bean(name = "stackOverflowLinkValidator")
+    private static final String STACKOVERFLOW_VALIDATOR = "stackOverflowLinkValidator";
+    private static final String GITHUB_VALIDATOR = "gitHubValidator";
+
+    @Bean(STACKOVERFLOW_VALIDATOR)
     StackOverflowLinkValidator stackOverflowLinkValidator() {
         return new StackOverflowLinkValidator();
     }
 
-    @Bean
+    @Bean(GITHUB_VALIDATOR)
     @Primary
-    @DependsOn("stackOverflowLinkValidator")
+    @DependsOn(STACKOVERFLOW_VALIDATOR)
     GitHubLinkValidator gitHubLinkValidator(StackOverflowLinkValidator next) {
         var validator = new GitHubLinkValidator();
         validator.setNextValidator(next);

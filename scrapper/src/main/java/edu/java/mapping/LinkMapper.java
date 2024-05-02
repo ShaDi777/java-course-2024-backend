@@ -8,4 +8,8 @@ public interface LinkMapper {
     LinkResponse linkInfoDtoToResponse(LinkInfoDto link);
 
     LinkInfoDto jdbcLinkModelToDto(Link link);
+
+    LinkInfoDto jooqLinkModelToDto(edu.java.domain.jooq.generated.tables.pojos.Link link);
+
+    LinkInfoDto jpaLinkModelToDto(edu.java.domain.jpa.model.Link link);
 }

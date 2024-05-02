@@ -21,6 +21,7 @@ import edu.java.bot.linktracker.replies.ReplyConstants;
 import edu.java.bot.linktracker.replies.TrackReply;
 import edu.java.bot.linktracker.replies.UntrackReply;
 import edu.java.bot.linktracker.replies.processors.BasicUserReplyProcessor;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -64,8 +65,8 @@ public class LinkTrackerBotTests {
             new UntrackCommand()
         ));
         commands.add(new HelpCommand(commands));
-
-        var messageProcessor = new BasicUserCommandProcessor(commands);
+        var registry = new SimpleMeterRegistry();
+        var messageProcessor = new BasicUserCommandProcessor(commands, registry);
         var replyProcessor = new BasicUserReplyProcessor(List.of(
                 new TrackReply(linksRepository),
                 new UntrackReply(linksRepository)

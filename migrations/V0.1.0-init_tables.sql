@@ -1,6 +1,8 @@
 --liquibase formatted sql
 
 --changeset shadi777:1
+BEGIN;
+
 CREATE TABLE chat (
     chat_id BIGINT PRIMARY KEY
 );
@@ -18,5 +20,4 @@ CREATE TABLE link_chat (
      PRIMARY KEY(link_id, chat_id)
 );
 
---changeset shadi777:2
-ALTER TABLE link ALTER COLUMN last_modified SET DEFAULT now();
+COMMIT;

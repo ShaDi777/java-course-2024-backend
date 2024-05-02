@@ -7,9 +7,7 @@ import edu.java.mapping.LinkMapper;
 import edu.java.services.LinkChatService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
 @RequiredArgsConstructor
 public class JdbcLinkChatService implements LinkChatService {
     private final JdbcLinkChatRepository linkChatRepository;
