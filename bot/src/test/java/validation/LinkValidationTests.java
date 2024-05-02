@@ -1,4 +1,4 @@
-package edu.java.bot;
+package validation;
 
 import edu.java.bot.linktracker.links.LinkRepository;
 import edu.java.bot.linktracker.links.TemporaryLinkRepository;
