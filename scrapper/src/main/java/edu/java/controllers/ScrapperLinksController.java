@@ -22,13 +22,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/links")
 @RequiredArgsConstructor
 public class ScrapperLinksController {
+    private static final String TG_HEADER = "Tg-Chat-Id";
+
     private final LinkMapper linkMapper;
     private final LinkService linkService;
     private final LinkChatService linkChatService;
 
     @GetMapping
     public ListLinksResponse getTrackedLinks(
-        @RequestHeader("Tg-Chat-Id") @Min(0) long tgChatId
+        @RequestHeader(TG_HEADER) @Min(0) long tgChatId
     ) {
         var array = linkChatService.listAllLinksByChatId(tgChatId)
             .stream()
@@ -40,7 +42,7 @@ public class ScrapperLinksController {
 
     @PostMapping
     public LinkResponse addLink(
-        @RequestHeader("Tg-Chat-Id") @Min(0) long tgChatId,
+        @RequestHeader(TG_HEADER) @Min(0) long tgChatId,
         @Validated @RequestBody AddLinkRequest request
     ) {
         return linkMapper.linkInfoDtoToResponse(
@@ -50,7 +52,7 @@ public class ScrapperLinksController {
 
     @DeleteMapping
     public LinkResponse removeLink(
-        @RequestHeader("Tg-Chat-Id") @Min(0) long tgChatId,
+        @RequestHeader(TG_HEADER) @Min(0) long tgChatId,
         @Validated @RequestBody RemoveLinkRequest request
     ) {
         return linkMapper.linkInfoDtoToResponse(

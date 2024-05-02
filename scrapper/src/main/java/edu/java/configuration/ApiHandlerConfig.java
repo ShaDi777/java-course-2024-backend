@@ -12,7 +12,10 @@ import org.springframework.context.annotation.Primary;
 
 @Configuration
 public class ApiHandlerConfig {
-    @Bean(name = "stackOverflowApiHandler")
+    private static final String STACKOVERFLOW_HANDLER = "stackOverflowApiHandler";
+    private static final String GITHUB_HANDLER = "gitHubApiHandler";
+
+    @Bean(STACKOVERFLOW_HANDLER)
     public StackOverflowApiHandler stackOverflowApiHandler(
         StackOverflowClient stackOverflowClient,
         StackOverflowLinkService stackOverflowLinkService
@@ -20,9 +23,9 @@ public class ApiHandlerConfig {
         return new StackOverflowApiHandler(stackOverflowClient, stackOverflowLinkService);
     }
 
-    @Bean
+    @Bean(GITHUB_HANDLER)
     @Primary
-    @DependsOn("stackOverflowApiHandler")
+    @DependsOn(STACKOVERFLOW_HANDLER)
     public GitHubApiHandler gitHubApiHandler(
         GitHubClient gitHubClient,
         StackOverflowApiHandler stackOverflowApiHandler

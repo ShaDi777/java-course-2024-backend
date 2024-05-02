@@ -14,7 +14,9 @@ public record ApplicationConfig(
     @NotEmpty
     String telegramToken,
     RateLimiter rateLimiter,
-    RetrySpecification retrySpecification
+    RetrySpecification retrySpecification,
+    TopicInfo topic,
+    TopicInfo deadTopic
 ) {
     public record RateLimiter(
         boolean enable,
@@ -28,6 +30,13 @@ public record ApplicationConfig(
         @NotNull Duration delay,
         @NotNull Double jitter,
         Set<Integer> codes
+    ) {
+    }
+
+    public record TopicInfo(
+        @NotNull String name,
+        @NotNull Integer partitions,
+        @NotNull Integer replicas
     ) {
     }
 }

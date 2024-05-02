@@ -14,6 +14,11 @@ app:
     delay: 10000
     jitter: 0.5
     codes: 429, 500, 501, 502, 503, 504
+  topic:
+    name: "bot_updates_queue"
+    partitions: 10
+    replicas: 1
+  use-queue: true
 
 spring:
   application:
@@ -29,8 +34,10 @@ spring:
       ddl-auto: none
     properties:
       hibernate:
-        show_sql: true
+        show_sql: false
         format_sql: true
+  kafka:
+    bootstrap-servers: localhost:9092
 
 springdoc:
   swagger-ui:
@@ -41,3 +48,24 @@ server:
 
 logging:
   config: classpath:log4j2-plain.xml
+
+management:
+  server:
+    port: 8081
+  endpoint:
+    info.enabled: true
+    health.enabled: true
+    prometheus.enabled: true
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include:
+          - info
+          - health
+          - prometheus
+      path-mapping:
+        prometheus: "metrics"
+  metrics:
+    tags:
+      application: ${spring.application.name}

@@ -15,7 +15,9 @@ public record ApplicationConfig(
     Scheduler scheduler,
     DatabaseAccessType databaseAccessType,
     RateLimiter rateLimiter,
-    RetrySpecification retrySpecification
+    RetrySpecification retrySpecification,
+    TopicInfo topic,
+    Boolean useQueue
 ) {
     public record Scheduler(
         boolean enable,
@@ -35,6 +37,13 @@ public record ApplicationConfig(
         @NotNull Duration delay,
         @NotNull Double jitter,
         Set<Integer> codes
+    ) {
+    }
+
+    public record TopicInfo(
+        @NotNull String name,
+        @NotNull Integer partitions,
+        @NotNull Integer replicas
     ) {
     }
 }

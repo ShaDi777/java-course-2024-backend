@@ -10,12 +10,25 @@ app:
     delay: 10000
     jitter: 0.5
     codes: 429, 500, 501, 502, 503, 504
+  topic:
+    name: "bot_updates_queue"
+    partitions: 10
+    replicas: 1
+  dead-topic:
+    name: "bot_updates_dlq"
+    partitions: 10
+    replicas: 1
 
 spring:
   application:
     name: bot
   jackson:
     time-zone: UTC
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: Group1
+      auto-offset-reset: earliest
 
 springdoc:
   swagger-ui:
@@ -26,3 +39,24 @@ server:
 
 logging:
   config: classpath:log4j2-plain.xml
+
+management:
+  server:
+    port: 8091
+  endpoint:
+    info.enabled: true
+    health.enabled: true
+    prometheus.enabled: true
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include:
+          - info
+          - health
+          - prometheus
+      path-mapping:
+        prometheus: "metrics"
+  metrics:
+    tags:
+      application: ${spring.application.name}
