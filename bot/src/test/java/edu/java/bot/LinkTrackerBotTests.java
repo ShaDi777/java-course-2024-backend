@@ -8,6 +8,7 @@ import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.SendResponse;
 import edu.java.bot.linktracker.bot.LinkTrackerBot;
+import edu.java.bot.linktracker.chats.ChatRepository;
 import edu.java.bot.linktracker.commands.CommandConstants;
 import edu.java.bot.linktracker.commands.HelpCommand;
 import edu.java.bot.linktracker.commands.ListCommand;
@@ -20,6 +21,7 @@ import edu.java.bot.linktracker.replies.ReplyConstants;
 import edu.java.bot.linktracker.replies.TrackReply;
 import edu.java.bot.linktracker.replies.UntrackReply;
 import edu.java.bot.linktracker.replies.processors.BasicUserReplyProcessor;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -44,6 +46,7 @@ public class LinkTrackerBotTests {
     Update fakeUpdate = Mockito.mock(Update.class);
     LinkTrackerBot linkTrackerBot;
     LinkRepository linksRepository;
+    ChatRepository chatRepository;
 
     @Mock
     TelegramBot bot;
@@ -54,15 +57,16 @@ public class LinkTrackerBotTests {
     @BeforeEach
     public void InitBot() {
         linksRepository = Mockito.mock(LinkRepository.class);
+        chatRepository = Mockito.mock(ChatRepository.class);
         var commands = new ArrayList<>(List.of(
             new ListCommand(linksRepository),
-            new StartCommand(),
+            new StartCommand(chatRepository),
             new TrackCommand(),
             new UntrackCommand()
         ));
         commands.add(new HelpCommand(commands));
-
-        var messageProcessor = new BasicUserCommandProcessor(commands);
+        var registry = new SimpleMeterRegistry();
+        var messageProcessor = new BasicUserCommandProcessor(commands, registry);
         var replyProcessor = new BasicUserReplyProcessor(List.of(
                 new TrackReply(linksRepository),
                 new UntrackReply(linksRepository)
