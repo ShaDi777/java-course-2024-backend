@@ -1,14 +1,62 @@
 app:
-  telegram-token: unset
+  telegram-token: ${TG_TOKEN}
+  rate-limiter:
+    enable: true
+    limit: 120
+    refill-per-minute: 120
+  retry-specification:
+    back-off-type: fixed
+    max-attempts: 3
+    delay: 10000
+    jitter: 0.5
+    codes: 429, 500, 501, 502, 503, 504
+  topic:
+    name: "bot_updates_queue"
+    partitions: 10
+    replicas: 1
+  dead-topic:
+    name: "bot_updates_dlq"
+    partitions: 10
+    replicas: 1
 
 spring:
   application:
     name: bot
   jackson:
     time-zone: UTC
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: Group1
+      auto-offset-reset: earliest
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
 
 server:
   port: 8090
 
 logging:
   config: classpath:log4j2-plain.xml
+
+management:
+  server:
+    port: 8091
+  endpoint:
+    info.enabled: true
+    health.enabled: true
+    prometheus.enabled: true
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include:
+          - info
+          - health
+          - prometheus
+      path-mapping:
+        prometheus: "metrics"
+  metrics:
+    tags:
+      application: ${spring.application.name}

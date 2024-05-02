@@ -1,0 +1,56 @@
+package edu.java;
+
+import edu.java.dto.ApiErrorResponse;
+import edu.java.exceptions.ChatAlreadyExistsException;
+import edu.java.exceptions.ResourceNotFoundException;
+import edu.java.exceptions.TooManyRequestsException;
+import java.util.Arrays;
+import java.util.Objects;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+
+@RestControllerAdvice
+public class ScrapperExceptionHandler {
+    @ExceptionHandler({TooManyRequestsException.class})
+    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+    public ApiErrorResponse handleTooManyRequests(Exception exception, WebRequest request) {
+        return createApiErrorResponse(exception, request, HttpStatus.TOO_MANY_REQUESTS);
+    }
+
+    @ExceptionHandler({ResourceNotFoundException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiErrorResponse handleNotFound(Exception exception, WebRequest request) {
+        return createApiErrorResponse(exception, request, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({
+        ChatAlreadyExistsException.class,
+        MethodArgumentNotValidException.class,
+        WebClientResponseException.class
+    })
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ApiErrorResponse handleBadRequest(Exception exception, WebRequest request) {
+        return createApiErrorResponse(exception, request, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({Exception.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiErrorResponse handleUnknownException(Exception exception, WebRequest request) {
+        return createApiErrorResponse(exception, request, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private static ApiErrorResponse createApiErrorResponse(Exception exception, WebRequest request, HttpStatus status) {
+        return new ApiErrorResponse(
+            request.getDescription(false),
+            status.toString(),
+            exception.getClass().getName(),
+            exception.getMessage(),
+            Arrays.stream(exception.getStackTrace()).map(Objects::toString).toArray(String[]::new)
+        );
+    }
+}
