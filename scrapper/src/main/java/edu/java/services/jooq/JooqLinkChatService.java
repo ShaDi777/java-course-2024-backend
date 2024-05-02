@@ -10,9 +10,7 @@ import edu.java.services.LinkChatService;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
 @RequiredArgsConstructor
 public class JooqLinkChatService implements LinkChatService {
     private final JooqLinkRepository linkRepository;

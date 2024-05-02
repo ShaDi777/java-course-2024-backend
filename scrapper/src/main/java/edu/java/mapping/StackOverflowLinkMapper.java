@@ -12,4 +12,8 @@ public interface StackOverflowLinkMapper {
     LinkStackoverflow dtoToJooqModel(StackOverflowLinkDto link);
 
     StackOverflowLinkDto jooqModelToDto(LinkStackoverflow link);
+
+    edu.java.domain.jpa.model.StackOverflowLink dtoToJpaModel(StackOverflowLinkDto link);
+
+    StackOverflowLinkDto jpaModelToDto(edu.java.domain.jpa.model.StackOverflowLink link);
 }

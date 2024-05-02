@@ -1,4 +1,4 @@
-package edu.java.bot;
+package edu.java.bot.controllers;
 
 import edu.java.bot.dto.LinkUpdateRequest;
 import edu.java.bot.dto.LinkUpdateResponse;
