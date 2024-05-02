@@ -7,8 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 @Slf4j
 public class StackOverflowWebClient implements StackOverflowClient {
@@ -18,13 +18,15 @@ public class StackOverflowWebClient implements StackOverflowClient {
     private static final String UNKNOWN_EXCEPTION_LOG = "Unknown exception occurred! ";
 
     private final WebClient webClient;
+    private final Retry retry;
 
-    public StackOverflowWebClient() {
-        this(BASE_URL);
+    public StackOverflowWebClient(Retry retry) {
+        this(BASE_URL, retry);
     }
 
-    public StackOverflowWebClient(String baseUrl) {
+    public StackOverflowWebClient(String baseUrl, Retry retry) {
         this.webClient = WebClient.builder().baseUrl(baseUrl).build();
+        this.retry = retry;
     }
 
     @Override
@@ -36,17 +38,10 @@ public class StackOverflowWebClient implements StackOverflowClient {
             .onStatus(HttpStatus.NOT_FOUND::equals, (response) -> Mono.empty())
             .onStatus(HttpStatusCode::is5xxServerError, (response) -> {
                 log.error(SERVER_ERROR_LOG_WITH_STATUS_CODE + response.statusCode());
-                return Mono.empty();
+                return response.createError();
             })
             .bodyToMono(StackOverflowResponse.class)
-            .onErrorMap(WebClientResponseException.class, (throwable) -> {
-                log.error(WEBCLIENT_RESPONSE_EXCEPTION_LOG + throwable.getResponseBodyAsString());
-                return null;
-            })
-            .onErrorMap(Exception.class, (throwable) -> {
-                log.error(UNKNOWN_EXCEPTION_LOG + throwable.getMessage());
-                return null;
-            })
+            .retryWhen(retry)
             .block();
     }
 
@@ -59,17 +54,10 @@ public class StackOverflowWebClient implements StackOverflowClient {
             .onStatus(HttpStatus.NOT_FOUND::equals, (response) -> Mono.empty())
             .onStatus(HttpStatusCode::is5xxServerError, (response) -> {
                 log.error(SERVER_ERROR_LOG_WITH_STATUS_CODE + response.statusCode());
-                return Mono.empty();
+                return response.createError();
             })
             .bodyToMono(StackOverflowCommentsResponse.class)
-            .onErrorMap(WebClientResponseException.class, (throwable) -> {
-                log.error(WEBCLIENT_RESPONSE_EXCEPTION_LOG + throwable.getResponseBodyAsString());
-                return null;
-            })
-            .onErrorMap(Exception.class, (throwable) -> {
-                log.error(UNKNOWN_EXCEPTION_LOG + throwable.getMessage());
-                return null;
-            })
+            .retryWhen(retry)
             .block();
     }
 }

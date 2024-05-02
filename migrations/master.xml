@@ -9,6 +9,8 @@
         http://www.liquibase.org/xml/ns/dbchangelog-ext
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-    <include file="schema.sql" relativeToChangelogFile="false"/>
+    <include file="V0.1.0-init_tables.sql" relativeToChangelogFile="true"/>
+    <include file="V0.1.1-alter_links_table.sql" relativeToChangelogFile="true"/>
+    <include file="V1.0.0-add_stackoverflow_table.sql" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

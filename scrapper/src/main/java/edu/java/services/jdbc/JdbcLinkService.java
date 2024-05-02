@@ -15,7 +15,6 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
 @RequiredArgsConstructor
 public class JdbcLinkService implements LinkService {
     private final JdbcTgChatRepository chatRepository;
@@ -23,6 +22,7 @@ public class JdbcLinkService implements LinkService {
     private final JdbcLinkChatRepository linkChatRepository;
     private final LinkMapper linkMapper;
 
+    @Transactional
     @Override
     public LinkInfoDto add(long tgChatId, String url) {
         if (chatRepository.findById(tgChatId).isEmpty()) {
@@ -42,6 +42,7 @@ public class JdbcLinkService implements LinkService {
         return linkMapper.jdbcLinkModelToDto(link);
     }
 
+    @Transactional
     @Override
     public LinkInfoDto remove(long tgChatId, String url) {
         Link link = linkRepository.findByUrl(url)
@@ -71,6 +72,7 @@ public class JdbcLinkService implements LinkService {
             .toList();
     }
 
+    @Transactional
     @Override
     public void updateLastModified(long linkId, OffsetDateTime offsetDateTime) {
         Link link = linkRepository.findById(linkId)
@@ -80,6 +82,7 @@ public class JdbcLinkService implements LinkService {
         linkRepository.updateLink(link);
     }
 
+    @Transactional
     @Override
     public void updateLastChecked(long linkId, OffsetDateTime offsetDateTime) {
         Link link = linkRepository.findById(linkId)
