@@ -42,7 +42,6 @@ services:
       - zookeeper-data:/var/lib/zookeeper/data
       - zookeeper-log:/var/lib/zookeeper/log
 
-
   kafka1:
     image: confluentinc/cp-kafka:7.3.2
     hostname: kafka1
@@ -70,11 +69,42 @@ services:
     depends_on:
       - zoo1
 
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus-data:/prometheus
+      - ./metrics/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - backend
+
+  grafana:
+    image: grafana/grafana-oss:10.4.1
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - backend
+    depends_on:
+      - prometheus
+
 volumes:
   postgresql: { }
   zookeeper-data: { }
   zookeeper-log: { }
   kafka-data: { }
+  prometheus-data: { }
+  grafana-data: { }
 
 networks:
   backend: { }
